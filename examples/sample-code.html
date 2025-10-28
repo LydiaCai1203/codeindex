@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample HTML for Code Indexer</title>
+    
+    <!-- Style tag -->
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with id -->
+    <header id="main-header" class="header container">
+        <h1 id="site-title">Sample Website</h1>
+        <nav id="main-nav" class="navigation">
+            <ul>
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content with id -->
+    <main id="main-content" class="content container">
+        <section id="hero-section" class="hero">
+            <h2 id="hero-title">Welcome to Our Site</h2>
+            <p id="hero-description" class="description">This is a sample page for testing HTML indexing.</p>
+        </section>
+
+        <!-- User form with id -->
+        <form id="user-form" class="form">
+            <div class="form-group">
+                <label for="user-name" class="label">Name:</label>
+                <input type="text" id="user-name" name="name" class="input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="user-email" class="label">Email:</label>
+                <input type="email" id="user-email" name="email" class="input" required>
+            </div>
+            
+            <button type="submit" id="submit-button" class="button">Submit</button>
+        </form>
+
+        <!-- User list with id -->
+        <div id="user-list" class="user-list">
+            <h3 id="list-title" class="list-header">Users</h3>
+            <ul id="users" class="items">
+                <li class="user-item" data-user-id="1">User 1</li>
+                <li class="user-item" data-user-id="2">User 2</li>
+                <li class="user-item" data-user-id="3">User 3</li>
+            </ul>
+        </div>
+
+        <!-- Custom component example -->
+        <user-card id="card-1" class="card custom-component">
+            <h4>Custom User Card</h4>
+            <p>This is a custom component</p>
+        </user-card>
+
+        <!-- Another custom component -->
+        <app-sidebar id="sidebar" class="sidebar custom-component">
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="sidebar-link">Dashboard</a>
+                <a href="#settings" class="sidebar-link">Settings</a>
+            </nav>
+        </app-sidebar>
+    </main>
+
+    <!-- Footer with id -->
+    <footer id="main-footer" class="footer container">
+        <p id="footer-text" class="footer-text">© 2024 Sample Website</p>
+    </footer>
+
+    <!-- Script tag with id -->
+    <script id="main-script">
+        // JavaScript code for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            const submitButton = document.getElementById('submit-button');
+            const userForm = document.getElementById('user-form');
+            const userList = document.getElementById('user-list');
+            
+            // Function that references IDs
+            function handleSubmit(event) {
+                event.preventDefault();
+                const userName = document.getElementById('user-name').value;
+                const userEmail = document.getElementById('user-email').value;
+                
+                console.log('User:', userName, userEmail);
+                
+                // Add to user list
+                const usersList = document.getElementById('users');
+                const newItem = document.createElement('li');
+                newItem.className = 'user-item';
+                newItem.textContent = userName;
+                usersList.appendChild(newItem);
+            }
+            
+            // Event listener
+            userForm.addEventListener('submit', handleSubmit);
+            
+            // Reference to header
+            const header = document.getElementById('main-header');
+            header.style.backgroundColor = '#444';
+        });
+    </script>
+
+    <!-- Another script tag -->
+    <script id="utils-script">
+        // Utility functions
+        function validateEmail(email) {
+            return email.includes('@') && email.includes('.');
+        }
+        
+        function formatUserName(name) {
+            return name.trim().toUpperCase();
+        }
+        
+        function createUser(name, email) {
+            if (!validateEmail(email)) {
+                throw new Error('Invalid email');
+            }
+            return {
+                name: formatUserName(name),
+                email: email
+            };
+        }
+    </script>
+</body>
+</html>
+

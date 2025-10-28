@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.codeindex/
+*.db
+*.db-shm
+*.db-wal
+*.json
+
+# Package lock file (may contain private registry URLs)
+package-lock.json

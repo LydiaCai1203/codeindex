@@ -1,0 +1,47 @@
+{
+  "name": "@codeindex/ast-demo",
+  "version": "0.1.0",
+  "description": "Code indexing tool based on tree-sitter AST for providing context to code bots",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "codeindex": "./dist/src/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "cli": "node --loader ts-node/esm src/cli/index.ts",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "keywords": [
+    "ast",
+    "tree-sitter",
+    "code-index",
+    "code-bot",
+    "context"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/chokidar": "^1.7.5",
+    "better-sqlite3": "^11.0.0",
+    "chokidar": "^4.0.3",
+    "commander": "^11.1.0",
+    "fast-glob": "^3.3.2",
+    "tree-sitter": "^0.21.0",
+    "tree-sitter-go": "^0.21.0",
+    "tree-sitter-html": "^0.23.2",
+    "tree-sitter-java": "^0.21.0",
+    "tree-sitter-javascript": "^0.21.2",
+    "tree-sitter-python": "^0.21.0",
+    "tree-sitter-rust": "^0.21.0",
+    "tree-sitter-typescript": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

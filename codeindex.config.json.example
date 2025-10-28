@@ -1,0 +1,30 @@
+{
+    "rootDir": "/Users/caiqj/project/company/new/codingmatrix",
+    "dbPath": ".codeindex/codingmatrix.db",
+    "languages": ["go"],
+    "include": ["**/*.go"],
+    "exclude": ["**/vendor/**", "**/.git/**", "**/pg_data/**", "**/data/**", "**/bin/**", "**/build/**", "**/*.pb.go", "**/*.pb.gw.go"],
+    "maxNestedStructDepth": 5,
+    "concurrency": 4,
+    "summarizer": {
+        "apiEndpoint": "https://model-square.app.baizhi.cloud/v1/chat/completions",
+        "apiKey": "",
+        "model": "qwen3-coder-plus",
+        "concurrency": 1,
+        "maxRetries": 3
+    },
+    "embedding": {
+        "apiEndpoint": "https://model-square.app.baizhi.cloud/v1/embeddings",
+        "apiKey": "",
+        "model": "bge-m3",
+        "dimension": 1024,
+        "concurrency": 3,
+        "maxRetries": 2,
+        "defaultModel": "bge-m3"
+    },
+    "watcher": {
+        "batchIntervalMinutes": 10,
+        "minChangeLines": 5,
+        "debounceMs": 500
+    }
+}
