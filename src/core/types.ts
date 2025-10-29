@@ -58,6 +58,10 @@ export interface SymbolRecord {
   endCol: number;
   signature?: string;
   exported: boolean;
+  chunkHash?: string;
+  chunkSummary?: string;
+  summaryTokens?: number;
+  summarizedAt?: number;
 }
 
 export interface CallRecord {

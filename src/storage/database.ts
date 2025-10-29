@@ -55,6 +55,10 @@ export class CodeDatabase {
         end_col INTEGER NOT NULL,
         signature TEXT,
         exported INTEGER DEFAULT 0,
+        chunk_hash TEXT,
+        chunk_summary TEXT,
+        summary_tokens INTEGER,
+        summarized_at INTEGER,
         FOREIGN KEY (file_id) REFERENCES files(file_id) ON DELETE CASCADE
       );
 
@@ -96,6 +100,36 @@ export class CodeDatabase {
       CREATE INDEX IF NOT EXISTS idx_refs_symbol ON symbol_references(to_symbol_id);
       CREATE INDEX IF NOT EXISTS idx_refs_file ON symbol_references(from_file_id);
     `);
+
+    // Ensure new columns exist on existing databases (migration-safe)
+    this.ensureSummaryColumns();
+  }
+
+  private ensureSummaryColumns(): void {
+    const columns = this.db.prepare("PRAGMA table_info(symbols)").all() as Array<{ name: string }>;
+    const columnNames = new Set(columns.map(c => c.name));
+
+    const alterStatements: string[] = [];
+    if (!columnNames.has('chunk_hash')) {
+      alterStatements.push('ALTER TABLE symbols ADD COLUMN chunk_hash TEXT');
+    }
+    if (!columnNames.has('chunk_summary')) {
+      alterStatements.push('ALTER TABLE symbols ADD COLUMN chunk_summary TEXT');
+    }
+    if (!columnNames.has('summary_tokens')) {
+      alterStatements.push('ALTER TABLE symbols ADD COLUMN summary_tokens INTEGER');
+    }
+    if (!columnNames.has('summarized_at')) {
+      alterStatements.push('ALTER TABLE symbols ADD COLUMN summarized_at INTEGER');
+    }
+
+    if (alterStatements.length > 0) {
+      this.db.transaction(() => {
+        for (const stmt of alterStatements) {
+          this.db.exec(stmt);
+        }
+      })();
+    }
   }
 
   // File operations
@@ -131,8 +165,9 @@ export class CodeDatabase {
     const stmt = this.db.prepare(`
       INSERT INTO symbols (
         file_id, language, kind, name, qualified_name,
-        start_line, start_col, end_line, end_col, signature, exported
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        start_line, start_col, end_line, end_col, signature, exported,
+        chunk_hash, chunk_summary, summary_tokens, summarized_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const result = stmt.run(
       symbol.fileId,
@@ -145,7 +180,11 @@ export class CodeDatabase {
       symbol.endLine,
       symbol.endCol,
       symbol.signature || null,
-      symbol.exported ? 1 : 0
+      symbol.exported ? 1 : 0,
+      symbol.chunkHash || null,
+      symbol.chunkSummary || null,
+      symbol.summaryTokens || null,
+      symbol.summarizedAt || null
     );
     return result.lastInsertRowid as number;
   }
@@ -155,7 +194,9 @@ export class CodeDatabase {
       SELECT symbol_id as symbolId, file_id as fileId, language, kind, name,
              qualified_name as qualifiedName, start_line as startLine,
              start_col as startCol, end_line as endLine, end_col as endCol,
-             signature, exported
+             signature, exported, chunk_hash as chunkHash,
+             chunk_summary as chunkSummary, summary_tokens as summaryTokens,
+             summarized_at as summarizedAt
       FROM symbols WHERE name = ?
     `;
     const params: any[] = [name];
@@ -174,7 +215,9 @@ export class CodeDatabase {
       SELECT symbol_id as symbolId, file_id as fileId, language, kind, name,
              qualified_name as qualifiedName, start_line as startLine,
              start_col as startCol, end_line as endLine, end_col as endCol,
-             signature, exported
+             signature, exported, chunk_hash as chunkHash,
+             chunk_summary as chunkSummary, summary_tokens as summaryTokens,
+             summarized_at as summarizedAt
       FROM symbols
     `);
     return stmt.all() as SymbolRecord[];
@@ -185,7 +228,9 @@ export class CodeDatabase {
       SELECT symbol_id as symbolId, file_id as fileId, language, kind, name,
              qualified_name as qualifiedName, start_line as startLine,
              start_col as startCol, end_line as endLine, end_col as endCol,
-             signature, exported
+             signature, exported, chunk_hash as chunkHash,
+             chunk_summary as chunkSummary, summary_tokens as summaryTokens,
+             summarized_at as summarizedAt
       FROM symbols WHERE symbol_id = ?
     `);
     return stmt.get(symbolId) as SymbolRecord | undefined;
@@ -196,7 +241,9 @@ export class CodeDatabase {
       SELECT symbol_id as symbolId, file_id as fileId, language, kind, name,
              qualified_name as qualifiedName, start_line as startLine,
              start_col as startCol, end_line as endLine, end_col as endCol,
-             signature, exported
+             signature, exported, chunk_hash as chunkHash,
+             chunk_summary as chunkSummary, summary_tokens as summaryTokens,
+             summarized_at as summarizedAt
       FROM symbols WHERE file_id = ?
     `);
     return stmt.all(fileId) as SymbolRecord[];
@@ -204,6 +251,46 @@ export class CodeDatabase {
 
   deleteSymbolsByFile(fileId: number): void {
     this.db.prepare('DELETE FROM symbols WHERE file_id = ?').run(fileId);
+  }
+
+  updateSymbolSummary(
+    symbolId: number,
+    payload: {
+      chunkHash: string;
+      chunkSummary: string;
+      summaryTokens?: number;
+      summarizedAt?: number;
+    }
+  ): void {
+    const stmt = this.db.prepare(`
+      UPDATE symbols
+      SET chunk_hash = ?,
+          chunk_summary = ?,
+          summary_tokens = ?,
+          summarized_at = ?
+      WHERE symbol_id = ?
+    `);
+    stmt.run(
+      payload.chunkHash,
+      payload.chunkSummary,
+      payload.summaryTokens || null,
+      payload.summarizedAt || Math.floor(Date.now() / 1000),
+      symbolId
+    );
+  }
+
+  getSymbolsNeedingSummary(): SymbolRecord[] {
+    const stmt = this.db.prepare(`
+      SELECT symbol_id as symbolId, file_id as fileId, language, kind, name,
+             qualified_name as qualifiedName, start_line as startLine,
+             start_col as startCol, end_line as endLine, end_col as endCol,
+             signature, exported, chunk_hash as chunkHash,
+             chunk_summary as chunkSummary, summary_tokens as summaryTokens,
+             summarized_at as summarizedAt
+      FROM symbols
+      WHERE chunk_summary IS NULL
+    `);
+    return stmt.all() as SymbolRecord[];
   }
 
   // Call operations

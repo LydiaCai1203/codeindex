@@ -33,18 +33,21 @@ export class Indexer {
     await this.parser.init(this.options.languages);
   }
 
-  async indexAll(): Promise<void> {
-    console.log('Starting full indexing...');
-    
+  async indexAll(onProgress?: (current: number, total: number) => void): Promise<void> {
     const files = await this.scanFiles();
-    console.log(`Found ${files.length} files to index`);
+    
+    if (!onProgress) {
+      console.log(`Found ${files.length} files to index`);
+    }
 
     let indexed = 0;
     for (const filePath of files) {
       try {
         await this.indexFile(filePath);
         indexed++;
-        if (indexed % 10 === 0) {
+        if (onProgress) {
+          onProgress(indexed, files.length);
+        } else if (indexed % 10 === 0) {
           console.log(`Indexed ${indexed}/${files.length} files`);
         }
       } catch (error) {
@@ -52,7 +55,9 @@ export class Indexer {
       }
     }
 
-    console.log(`Indexing complete: ${indexed} files indexed`);
+    if (!onProgress) {
+      console.log(`Indexing complete: ${indexed} files indexed`);
+    }
   }
 
   async indexFile(filePath: string): Promise<void> {

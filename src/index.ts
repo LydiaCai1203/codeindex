@@ -43,27 +43,35 @@ export class CodeIndex {
   /**
    * Reindex all files in the workspace
    */
-  async reindexAll(): Promise<void> {
+  async reindexAll(onProgress?: (current: number, total: number) => void): Promise<void> {
     if (!this.initialized) {
       throw new Error('CodeIndex not initialized');
     }
-    await this.indexer.indexAll();
+    await this.indexer.indexAll(onProgress);
   }
 
   /**
    * Clear all existing data and rebuild the index from scratch
    */
-  async rebuild(): Promise<void> {
+  async rebuild(onProgress?: (current: number, total: number) => void): Promise<void> {
     if (!this.initialized) {
       throw new Error('CodeIndex not initialized');
     }
-    console.log('Clearing existing index...');
+    if (!onProgress) {
+      console.log('Clearing existing index...');
+    }
     this.indexer.getDatabase().clearAll();
-    console.log('Rebuilding index...');
-    await this.indexer.indexAll();
-    console.log('Vacuuming database...');
+    if (!onProgress) {
+      console.log('Rebuilding index...');
+    }
+    await this.indexer.indexAll(onProgress);
+    if (!onProgress) {
+      console.log('Vacuuming database...');
+    }
     this.indexer.getDatabase().vacuum();
-    console.log('Rebuild complete!');
+    if (!onProgress) {
+      console.log('Rebuild complete!');
+    }
   }
 
   /**
