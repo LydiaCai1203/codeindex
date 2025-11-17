@@ -1,0 +1,52 @@
+# CodeIndex Python SDK（内置 Node Worker）
+
+该 SDK 旨在让 Python 用户通过 `pip install` 的方式，直接访问 CodeIndex 已有的索引与查询能力。实现思路是在 SDK 内部维护一个透明的 Node Worker（使用本仓库构建产物），Python 端仅暴露同步 API。
+
+## 环境准备
+
+1. **构建 CodeIndex**：在仓库根目录执行
+   ```bash
+   npm install
+   npm run build
+   ```
+   这样会生成 `dist/`，Python Worker 需要加载其中的 `index.js`。
+2. **Python 依赖**：进入 `sdk/python`，安装本地包
+   ```bash
+   pip install -e .
+   ```
+3. **Node 运行时**：确保系统可执行 `node`（>= 18）。
+
+## 快速上手
+
+```python
+from codeindex_sdk import CodeIndexClient, CodeIndexConfig
+
+config = CodeIndexConfig(
+    root_dir="/path/to/project",
+    db_path=".codeindex/project.db",
+    languages=["go", "ts"],
+)
+
+with CodeIndexClient(config) as client:
+    symbols = client.find_symbols(name="BindRepoReq", language="go")
+    props = client.object_properties(object_name="Giter", language="go")
+    chain = client.call_chain(from_symbol=12345, direction="forward", depth=2)
+```
+
+## 工作原理
+
+- `CodeIndexClient` 会在首次调用时自动启动一个 Node Worker（`worker_server.js`），Worker 内部复用 `CodeIndex` 类加载索引数据库。
+- Python 与 Worker 之间通过 JSON-RPC（基于 `stdin/stdout`）通信，所有请求同步发送。
+- 如果 Worker 故障，客户端会抛出异常；你可以捕获后重新实例化客户端。
+
+## 常见问题
+
+- **Node 未安装**：`CodeIndexClient` 会在启动 Worker 时检测 `node`，若找不到会抛出 `NodeRuntimeError`。
+- **索引未构建**：请先使用 CLI `node dist/src/cli/index.js index ...` 建立 `.db` 文件。
+- **长时间任务**：可以通过 `timeout` 参数控制每次请求的最大等待时间。
+
+## 后续计划
+
+- 支持 gRPC/HTTP Worker，降低进程通信耦合。
+- 增加异步 API 与批量查询能力。
+

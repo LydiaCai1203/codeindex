@@ -137,6 +137,12 @@ node dist/cli/index.js rebuild
 - [摘要功能使用](docs/summarizer-usage.md)
 - [项目架构](docs/project.md)
 
+## 🔌 官方 SDK
+
+- [多语言 SDK 目录](sdk/README.md)：汇总 JavaScript/TypeScript 与 Python SDK 的使用方式
+- JavaScript/TypeScript：`sdk/javascript`，直接通过 npm 包复用 `CodeIndex` API
+- Python：`sdk/python`，SDK 内置 Node Worker，`pip install` 后即可通过 `CodeIndexClient` 发起查询
+
 ## 🗂️ 项目结构
 
 ```
