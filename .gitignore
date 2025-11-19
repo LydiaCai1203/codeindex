@@ -10,3 +10,7 @@ dist/
 
 # Package lock file (may contain private registry URLs)
 package-lock.json
+
+.DS_Store
+
+*.pyc
