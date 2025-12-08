@@ -2,7 +2,19 @@
 
 该 SDK 旨在让 Python 用户通过 `pip install` 的方式，直接访问 CodeIndex 已有的索引与查询能力。实现思路是在 SDK 内部维护一个透明的 Node Worker（使用本仓库构建产物），Python 端仅暴露同步 API。
 
-## 环境准备
+## 安装
+
+### 从 PyPI 安装（推荐）
+
+```bash
+# 使用阿里云镜像源（推荐，速度更快）
+pip install -i https://mirrors.aliyun.com/pypi/simple/ lydiacai-codeindex-sdk
+
+# 或使用官方 PyPI 源
+pip install lydiacai-codeindex-sdk
+```
+
+### 本地开发安装
 
 1. **构建 CodeIndex**：在仓库根目录执行
    ```bash

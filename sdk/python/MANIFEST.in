@@ -1,0 +1,21 @@
+# MANIFEST.in - 指定 Python 包中包含的文件
+
+# 包含 README
+include README.md
+
+# 包含许可证（如果存在）
+include LICENSE
+
+# 包含 worker_server.js（Python SDK 需要）
+include worker_server.js
+
+# 包含所有 Python 源文件
+recursive-include codeindex_sdk *.py
+
+# 排除开发文件
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.egg-info
+

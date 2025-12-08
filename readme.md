@@ -144,6 +144,30 @@ node dist/cli/index.js rebuild
 - Python：`sdk/python`，SDK 内置 Node Worker，`pip install` 后即可通过 `CodeIndexClient` 发起查询
   - 📖 [Python SDK 使用文档](sdk/python/README.md)
 
+### Python SDK 快速示例
+
+```python
+from codeindex_sdk import CodeIndexClient, CodeIndexConfig
+
+config = CodeIndexConfig(
+    root_dir="/path/to/project",
+    db_path=".codeindex/project.db",
+    languages=["go", "ts", "py"],
+)
+
+with CodeIndexClient(config) as client:
+    # 查找符号
+    symbols = client.find_symbols(name="CreateUser", language="go")
+    
+    # 查询对象属性
+    props = client.object_properties(object_name="UserService", language="go")
+    
+    # 生成调用链
+    chain = client.call_chain(from_symbol=12345, direction="forward", depth=2)
+```
+
+> 💡 **提示**：使用 Python SDK 前需要先通过 CLI 构建索引数据库（见上方"索引项目"步骤）
+
 ## 🗂️ 项目结构
 
 ```

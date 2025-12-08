@@ -19,10 +19,21 @@
     "tree-sitter",
     "code-index",
     "code-bot",
-    "context"
+    "context",
+    "code-intelligence",
+    "rag",
+    "semantic-search"
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LydiaCai1203/codeindex.git"
+  },
+  "homepage": "https://github.com/LydiaCai1203/codeindex#readme",
+  "bugs": {
+    "url": "https://github.com/LydiaCai1203/codeindex/issues"
+  },
   "dependencies": {
     "@types/chokidar": "^1.7.5",
     "better-sqlite3": "^11.0.0",

@@ -1,0 +1,38 @@
+# 源代码（已编译到 dist/）
+src/
+examples/
+scripts/
+docs/
+
+# 开发文件
+tsconfig.json
+*.log
+.DS_Store
+
+# 测试和开发工具
+node_modules/
+.codeindex/
+*.db
+*.db-shm
+*.db-wal
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 其他
+*.md
+!README.md
+codeindex-wx.JPG
+simple.jpg
+duplicate.jpg
+properties.jpg
+promo.md
+todolist.md
+
