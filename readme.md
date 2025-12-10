@@ -144,6 +144,12 @@ node dist/cli/index.js rebuild
 - Python：`sdk/python`，SDK 内置 Node Worker，`pip install` 后即可通过 `CodeIndexClient` 发起查询
   - 📖 [Python SDK 使用文档](sdk/python/README.md)
 
+### Python SDK 安装
+
+```bash
+pip install lydiacai-codeindex-sdk
+```
+
 ### Python SDK 快速示例
 
 ```python
