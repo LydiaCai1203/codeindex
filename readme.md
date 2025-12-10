@@ -20,6 +20,20 @@ CodeIndex 是一个基于 **Tree-sitter AST** 的跨语言代码索引系统，�
 - 👀 **实时文件监听**：自动检测文件变更，增量更新索引
 - 🌐 **多语言支持**：TypeScript/JavaScript、Go、Python、Rust、Java、HTML
 
+## 🖼️ 效果展示
+
+### 符号查询
+
+![符号查询示例](https://github.com/LydiaCai1203/codeindex/blob/main/simple.jpg)
+
+### 对象属性分析
+
+![对象属性分析示例](https://github.com/LydiaCai1203/codeindex/blob/main/properties.jpg)
+
+### 重复符号查询
+
+![重复符号查询示例](https://github.com/LydiaCai1203/codeindex/blob/main/duplicate.jpg)
+
 ## 🛠️ 技术栈
 
 - **语言**：TypeScript (ES2022)
@@ -149,6 +163,8 @@ node dist/cli/index.js rebuild
 ```bash
 pip install lydiacai-codeindex-sdk
 ```
+
+📦 **PyPI 地址**：[https://pypi.org/project/lydiacai-codeindex-sdk/0.1.0/](https://pypi.org/project/lydiacai-codeindex-sdk/0.1.0/)
 
 ### Python SDK 快速示例
 
