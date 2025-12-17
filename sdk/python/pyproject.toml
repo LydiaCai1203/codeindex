@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lydiacai-codeindex-sdk"
-version = "0.1.0"
-description = "CodeIndex 的官方 Python SDK，内置 Node Worker 以便直接查询索引"
+version = "0.2.0"
+description = "CodeIndex Python SDK - Direct SQLite database access"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
@@ -18,19 +18,20 @@ keywords = [
   "code-index",
   "tree-sitter",
   "code-intelligence",
-  "semantic-search"
+  "semantic-search",
+  "sqlite"
 ]
 dependencies = [
-  "typing_extensions>=4.5.0"
+  "numpy>=1.24.0"
 ]
+
 [project.urls]
 Homepage = "https://github.com/LydiaCai1203/codeindex"
 Repository = "https://github.com/LydiaCai1203/codeindex"
 Issues = "https://github.com/LydiaCai1203/codeindex/issues"
 
 [project.optional-dependencies]
-dev = ["pytest", "mypy"]
+dev = ["pytest", "mypy", "black"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-

@@ -1,5 +1,0 @@
-typing_extensions>=4.5.0
-
-[dev]
-pytest
-mypy

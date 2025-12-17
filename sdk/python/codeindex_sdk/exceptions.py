@@ -1,21 +1,31 @@
-"""自定义异常"""
+"""Custom exceptions"""
 
 class CodeIndexSDKError(RuntimeError):
-    """SDK 内部通用异常"""
+    """SDK internal generic exception"""
     pass
 
 
+class DatabaseNotFoundError(CodeIndexSDKError):
+    """Database file not found"""
+    pass
+
+
+class DatabaseError(CodeIndexSDKError):
+    """Database operation error"""
+    pass
+
+
+# Keep old exceptions for backward compatibility (deprecated)
 class NodeRuntimeError(CodeIndexSDKError):
-    """无法找到或启动 Node 运行时"""
+    """Node runtime not found (deprecated, kept for compatibility)"""
     pass
 
 
 class WorkerCrashedError(CodeIndexSDKError):
-    """Worker 进程异常退出"""
+    """Worker process crashed (deprecated, kept for compatibility)"""
     pass
 
 
 class RequestTimeoutError(CodeIndexSDKError):
-    """请求超时"""
+    """Request timeout (deprecated, kept for compatibility)"""
     pass
-

@@ -1,2 +1,0 @@
-codeindex_sdk
-dist

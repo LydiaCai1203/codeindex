@@ -6,8 +6,7 @@ include README.md
 # 包含许可证（如果存在）
 include LICENSE
 
-# 包含 worker_server.js（Python SDK 需要）
-include worker_server.js
+# 注意：不再需要 worker_server.js（新版本直接访问 SQLite）
 
 # 包含所有 Python 源文件
 recursive-include codeindex_sdk *.py
@@ -18,4 +17,3 @@ global-exclude __pycache__
 global-exclude *.py[co]
 global-exclude .DS_Store
 global-exclude *.egg-info
-

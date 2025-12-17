@@ -1,33 +1,47 @@
-"""SDK 配置定义"""
+"""SDK configuration (simplified for direct database access)"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence, Any
 
 
-@dataclass(slots=True)
+@dataclass
 class CodeIndexConfig:
-    """CodeIndex Worker 初始化所需参数"""
-
-    root_dir: str
+    """CodeIndex configuration (simplified, kept for backward compatibility)"""
+    
     db_path: str
-    languages: Sequence[str]
+    # Legacy fields (kept for backward compatibility, ignored)
+    root_dir: Optional[str] = None
+    languages: Optional[Sequence[str]] = None
     include: Optional[Sequence[str]] = None
     exclude: Optional[Sequence[str]] = None
     batch_interval_minutes: Optional[int] = None
     min_change_lines: Optional[int] = None
     embedding_options: Optional[Dict[str, Any]] = None
     extra: Dict[str, Any] = field(default_factory=dict)
-
+    
+    def __post_init__(self):
+        """Validate configuration"""
+        if not self.db_path:
+            raise ValueError("db_path is required")
+    
     def to_payload(self) -> Dict[str, Any]:
-        # 手动构建 payload，确保字段名正确映射到 Node 端期望的格式
+        """
+        Convert to payload format (kept for backward compatibility)
+        
+        Note: This method is deprecated and only kept for compatibility.
+        The new SDK doesn't use this payload format.
+        """
         payload: Dict[str, Any] = {
-            "rootDir": self.root_dir,
             "dbPath": self.db_path,
-            "languages": list(self.languages),
         }
         
+        # Include legacy fields for compatibility
+        if self.root_dir is not None:
+            payload["rootDir"] = self.root_dir
+        if self.languages is not None:
+            payload["languages"] = list(self.languages)
         if self.include is not None:
             payload["include"] = list(self.include)
         if self.exclude is not None:
@@ -39,9 +53,7 @@ class CodeIndexConfig:
         if self.embedding_options is not None:
             payload["embeddingOptions"] = self.embedding_options
         
-        # 合并 extra 字段
         if self.extra:
             payload.update(self.extra)
         
         return payload
-
