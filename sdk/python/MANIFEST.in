@@ -8,7 +8,7 @@ include README.md
 # 注意：不再需要 worker_server.js（新版本直接访问 SQLite）
 
 # 包含所有 Python 源文件
-recursive-include codeindex_sdk *.py
+recursive-include codeindex *.py
 
 # 排除开发文件
 global-exclude *.pyc

@@ -6,3 +6,11 @@ caicai_codeindex.egg-info/SOURCES.txt
 caicai_codeindex.egg-info/dependency_links.txt
 caicai_codeindex.egg-info/requires.txt
 caicai_codeindex.egg-info/top_level.txt
+codeindex/__init__.py
+codeindex/client.py
+codeindex/config.py
+codeindex/database.py
+codeindex/exceptions.py
+codeindex/node_runner.py
+codeindex/query.py
+codeindex/types.py

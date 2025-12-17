@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: caicai-codeindex
-Version: 0.3.0
+Version: 0.3.1
 Summary: CodeIndex Python SDK - Direct SQLite database access
 Author-email: CodeIndex <opensource@example.com>
 License: MIT
