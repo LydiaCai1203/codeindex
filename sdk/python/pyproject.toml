@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "caicai-codeindex"
-version = "0.3.1"
+version = "0.3.3"
 description = "CodeIndex Python SDK - Direct SQLite database access"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -22,7 +22,8 @@ keywords = [
   "sqlite"
 ]
 dependencies = [
-  "numpy>=1.24.0"
+    "numpy>=1.24.0",
+    "requests>=2.28.0"
 ]
 
 [project.urls]

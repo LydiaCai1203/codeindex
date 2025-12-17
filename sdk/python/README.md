@@ -11,7 +11,8 @@
 - ✅ **性能卓越**：无进程间通信开销，查询延迟从 50-100ms 降至 1-5ms
 - ✅ **简单易用**：API 清晰直观，保持向后兼容
 - ✅ **类型提示**：完整的类型定义，IDE 友好
-- ✅ **轻量级**：仅依赖 numpy，无其他重型依赖
+- ✅ **轻量级**：仅依赖 numpy 和 requests
+- ✅ **自然语言查询**：支持使用自然语言进行语义搜索，自动生成 embedding
 
 ## 📦 安装
 
@@ -19,7 +20,7 @@
 
 ```bash
 # 使用阿里云镜像源（推荐，速度更快）
-pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex-sdk
+pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex
 
 # 或使用官方 PyPI 源
 pip install caicai-codeindex
@@ -99,40 +100,102 @@ with CodeIndexClient(config) as client:
     symbols = client.find_symbols(name="CreateUser", language="go")
 ```
 
-### 语义搜索
+### 语义搜索（自然语言查询）
 
-语义搜索功能需要预先生成 embedding。首先使用 CLI 生成 embedding：
+语义搜索功能支持使用自然语言查询代码，类似于 Node.js CLI 的 `search` 命令。
 
+#### 前置要求
+
+1. 使用 CLI 生成 embedding：
 ```bash
-node dist/src/cli/index.js embed --db .codeindex/project.db
+node dist/cli/index.js embed --db .codeindex/project.db
 ```
 
-然后在 Python 中使用：
+2. 配置 embedding API（三种方式）：
+   - **方式1（推荐）**：在 `codeindex.config.json` 中配置：
+   ```json
+   {
+     "embedding": {
+       "apiEndpoint": "https://api.example.com/v1/embeddings",
+       "apiKey": "your-api-key",
+       "model": "bge-m3",
+       "dimension": 1024,
+       "defaultModel": "bge-m3"
+     }
+   }
+   ```
+   
+   - **方式2**：使用环境变量：
+   ```bash
+   export CODEINDEX_EMBEDDING_API_ENDPOINT="https://api.example.com/v1/embeddings"
+   export CODEINDEX_EMBEDDING_API_KEY="your-api-key"
+   ```
+   
+   - **方式3**：在代码中直接传递参数
 
+#### 使用示例
+
+**最简单的用法（推荐）**：
 ```python
-from codeindex_sdk import CodeIndexClient
-import openai
+from codeindex import CodeIndexClient
 
 with CodeIndexClient(".codeindex/project.db") as client:
-    # 生成查询的 embedding（使用与索引时相同的模型）
-    response = openai.embeddings.create(
-        model="text-embedding-3-small",
-        input="用户登录验证"
-    )
-    query_embedding = response.data[0].embedding
-    
-    # 执行语义搜索
+    # 自然语言查询，自动从配置文件读取 embedding 配置
     results = client.semantic_search(
         query="用户登录验证",
-        query_embedding=query_embedding,
-        model="text-embedding-3-small",  # 与生成 embedding 时使用的模型一致
-        top_k=5,
-        language="go",
-        min_similarity=0.7
+        top_k=5
     )
     
     for result in results:
-        print(f"{result['symbol']['name']} (similarity: {result['similarity']:.2f})")
+        symbol = result['symbol']
+        print(f"{symbol['kind']} {symbol['qualifiedName']}")
+        print(f"  相似度: {result['similarity']:.1%}")
+        print(f"  位置: {result['location']['path']}:{result['location']['startLine']}")
+        if symbol.get('chunkSummary'):
+            print(f"  摘要: {symbol['chunkSummary'][:80]}...")
+        print()
+```
+
+**带过滤条件的查询**：
+```python
+results = client.semantic_search(
+    query="用户登录验证",
+    top_k=5,
+    language="go",  # 只搜索 Go 代码
+    kind="function",  # 只搜索函数
+    min_similarity=0.7  # 最小相似度阈值
+)
+```
+
+**显式指定 embedding 配置**：
+```python
+results = client.semantic_search(
+    query="用户登录验证",
+    api_endpoint="https://api.example.com/v1/embeddings",
+    api_key="your-api-key",
+    model="bge-m3",
+    top_k=5
+)
+```
+
+**使用预计算的 embedding**（高级用法）：
+```python
+import openai
+
+# 手动生成 embedding
+response = openai.embeddings.create(
+    model="text-embedding-3-small",
+    input="用户登录验证"
+)
+query_embedding = response.data[0].embedding
+
+# 使用预计算的 embedding
+results = client.semantic_search(
+    query="用户登录验证",
+    query_embedding=query_embedding,
+    model="text-embedding-3-small",
+    top_k=5
+)
 ```
 
 ## 📚 API 文档
@@ -273,31 +336,56 @@ refs = client.references(12345)
 
 #### 语义搜索
 
-##### `semantic_search(query: str, query_embedding: List[float], model: str = "default", top_k: int = 10, language: str | None = None, kind: str | None = None, min_similarity: float = 0.0) -> List[Dict]`
+##### `semantic_search(query: str | None = None, query_embedding: List[float] | None = None, model: str | None = None, top_k: int = 10, language: str | None = None, kind: str | None = None, min_similarity: float = 0.7, api_endpoint: str | None = None, api_key: str | None = None, dimension: int | None = None) -> List[Dict]`
 
-语义搜索（需要预先生成 embedding）。
+语义搜索，支持自然语言查询。
 
 **参数：**
-- `query` (str): 查询文本（仅供参考，不用于搜索）
-- `query_embedding` (List[float]): 查询 embedding 向量（必需）
-- `model` (str): Embedding 模型名称（需与索引时使用的模型一致）
-- `top_k` (int): 返回结果数量
-- `language` (str, optional): 语言过滤器
-- `kind` (str, optional): 符号类型过滤器
-- `min_similarity` (float): 最小相似度阈值（0.0-1.0）
+- `query` (str, optional): 自然语言查询文本（如果未提供 `query_embedding`，则必需）
+- `query_embedding` (List[float], optional): 查询 embedding 向量（如果未提供，将从 `query` 自动生成）
+- `model` (str, optional): Embedding 模型名称（可选，将从配置文件读取）
+- `top_k` (int): 返回结果数量，默认 10
+- `language` (str, optional): 语言过滤器（如 "go", "ts", "python"）
+- `kind` (str, optional): 符号类型过滤器（如 "function", "class", "struct"）
+- `min_similarity` (float): 最小相似度阈值（0.0-1.0），默认 0.7
+- `api_endpoint` (str, optional): Embedding API 端点（可选，将从配置文件读取）
+- `api_key` (str, optional): Embedding API 密钥（可选，将从配置文件读取）
+- `dimension` (int, optional): Embedding 维度（可选，将从配置文件读取）
 
 **返回：** 搜索结果列表，每个结果包含：
-- `symbol`: 符号信息
+- `symbol`: 符号信息（包含 name, kind, qualifiedName, chunkSummary 等）
 - `similarity`: 相似度分数（0.0-1.0）
+- `location`: 位置信息（path, startLine, endLine 等）
+
+**配置优先级：**
+1. 函数参数（最高优先级）
+2. 环境变量（`CODEINDEX_EMBEDDING_API_ENDPOINT`, `CODEINDEX_EMBEDDING_API_KEY`, `CODEINDEX_EMBEDDING_MODEL`）
+3. `codeindex.config.json` 配置文件
+4. 默认值
 
 **示例：**
 ```python
+# 自然语言查询（推荐）
 results = client.semantic_search(
-    query="用户登录",
+    query="用户登录验证",
+    top_k=5
+)
+
+# 带过滤条件
+results = client.semantic_search(
+    query="用户登录验证",
+    top_k=5,
+    language="go",
+    kind="function",
+    min_similarity=0.7
+)
+
+# 使用预计算的 embedding
+results = client.semantic_search(
+    query="用户登录验证",
     query_embedding=embedding_vector,
     model="text-embedding-3-small",
-    top_k=5,
-    min_similarity=0.7
+    top_k=5
 )
 ```
 
@@ -368,13 +456,54 @@ node dist/src/cli/index.js index \
 ### Q: 语义搜索返回空结果？
 
 **A:** 确保：
-1. 已使用 CLI 生成 embedding：`node dist/src/cli/index.js embed --db .codeindex/project.db`
-2. 使用相同的 embedding 模型生成 `query_embedding`
+1. 已使用 CLI 生成 embedding：`node dist/cli/index.js embed --db .codeindex/project.db`
+2. 使用相同的 embedding 模型（可通过配置文件或参数指定）
 3. 检查 `min_similarity` 阈值是否过高（尝试降低到 0.5 或更低）
+4. 确保已正确配置 embedding API（配置文件或环境变量）
+
+### Q: 如何配置 embedding API？
+
+**A:** 有三种方式（按优先级排序）：
+
+1. **环境变量（推荐）**：
+```bash
+export CODEINDEX_EMBEDDING_API_ENDPOINT="https://api.example.com/v1/embeddings"
+export CODEINDEX_EMBEDDING_API_KEY="your-api-key"
+export CODEINDEX_EMBEDDING_MODEL="bge-m3"  # 可选
+```
+
+2. **配置文件**：在项目根目录创建 `codeindex.config.json`：
+```json
+{
+  "embedding": {
+    "apiEndpoint": "https://api.example.com/v1/embeddings",
+    "apiKey": "your-api-key",
+    "model": "bge-m3",
+    "defaultModel": "bge-m3"
+  }
+}
+```
+
+3. **代码中传递**：
+```python
+results = client.semantic_search(
+    query="用户登录验证",
+    api_endpoint="https://api.example.com/v1/embeddings",
+    api_key="your-api-key",
+    model="bge-m3"
+)
+```
 
 ### Q: 如何生成 query_embedding？
 
-**A:** 使用你选择的 embedding API（如 OpenAI）：
+**A:** 通常不需要手动生成！直接使用自然语言查询即可：
+
+```python
+# 推荐：直接使用自然语言查询
+results = client.semantic_search(query="用户登录验证", top_k=5)
+```
+
+SDK 会自动调用 embedding API 生成查询向量。如果需要手动生成（高级用法），可以使用你选择的 embedding API（如 OpenAI）：
 
 ```python
 import openai
@@ -384,6 +513,13 @@ response = openai.embeddings.create(
     input="你的查询文本"
 )
 query_embedding = response.data[0].embedding
+
+# 然后传递给 semantic_search
+results = client.semantic_search(
+    query="你的查询文本",
+    query_embedding=query_embedding,
+    model="text-embedding-3-small"
+)
 ```
 
 ### Q: 支持哪些编程语言？
@@ -408,7 +544,7 @@ query_embedding = response.data[0].embedding
 
 - **Python**: >= 3.9
 - **索引数据库**：需要先使用 CodeIndex CLI 构建索引
-- **依赖**: numpy >= 1.24.0
+- **依赖**: numpy >= 1.24.0, requests >= 2.28.0
 
 ## 📄 许可证
 
@@ -421,6 +557,12 @@ MIT License
 - [语言支持文档](../../docs/language-support.md)
 
 ## 📝 更新日志
+
+### v0.3.0
+- ✨ 新增自然语言查询功能，支持直接使用自然语言进行语义搜索
+- ✨ 自动从配置文件读取 embedding API 配置
+- ✨ 支持环境变量配置 embedding API
+- 🔧 改进 `semantic_search` API，自动生成查询 embedding
 
 ### v0.2.0
 - ✨ 重构为直接访问 SQLite 数据库，无需 Node.js

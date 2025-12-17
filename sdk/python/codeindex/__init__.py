@@ -1,11 +1,12 @@
 """CodeIndex Python SDK - Direct SQLite database access"""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 from .client import CodeIndexClient
 from .config import CodeIndexConfig
 from .database import CodeIndexDatabase
 from .query import CodeIndexQuery
+from .embeddings_generator import EmbeddingsGenerator
 from .types import (
     Location, FileRecord, SymbolRecord, CallRecord, ReferenceRecord,
     CallNode, PropertyNode, Language, SymbolKind
@@ -26,6 +27,7 @@ __all__ = [
     "CodeIndexConfig",
     "CodeIndexDatabase",
     "CodeIndexQuery",
+    "EmbeddingsGenerator",
     "Location",
     "FileRecord",
     "SymbolRecord",

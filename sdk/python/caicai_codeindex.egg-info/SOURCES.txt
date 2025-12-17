@@ -10,6 +10,7 @@ codeindex/__init__.py
 codeindex/client.py
 codeindex/config.py
 codeindex/database.py
+codeindex/embeddings_generator.py
 codeindex/exceptions.py
 codeindex/node_runner.py
 codeindex/query.py
