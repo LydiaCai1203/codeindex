@@ -168,10 +168,10 @@ node dist/cli/index.js rebuild
 
 ```bash
 # 使用阿里云镜像源（推荐，速度更快）
-pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex-sdk
+pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex
 
 # 或使用官方 PyPI 源
-pip install caicai-codeindex-sdk
+pip install caicai-codeindex
 ```
 
 📦 **PyPI 地址**：[https://pypi.org/project/caicai-codeindex-sdk/](https://pypi.org/project/caicai-codeindex-sdk/)
