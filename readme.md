@@ -179,18 +179,28 @@ pip install caicai-codeindex-sdk
 ### Python SDK 快速示例
 
 ```python
-from codeindex_sdk import CodeIndexClient
+from codeindex import CodeIndexClient
 
-# 直接使用数据库路径（推荐）
-with CodeIndexClient(".codeindex/project.db") as client:
-    # 查找符号
-    symbols = client.find_symbols(name="CreateUser", language="go")
-    
-    # 查询对象属性
-    props = client.object_properties("UserService", language="go")
-    
-    # 生成调用链
-    chain = client.call_chain(from_symbol=12345, direction="forward", depth=2)
+# 创建客户端并启动连接
+client = CodeIndexClient(".codeindex/project.db")
+client.start()
+
+# 查找符号
+symbols = client.find_symbols(name="CreateUser", language="go")
+for symbol in symbols:
+    print(f"{symbol['name']} at {symbol['location']['path']}:{symbol['location']['startLine']}")
+
+# 查询对象属性
+props = client.object_properties(object_name="UserService", language="go")
+for prop in props:
+    print(f"{prop['kind']} {prop['name']}")
+
+# 生成调用链（需要先获取符号 ID）
+symbol = client.find_symbol(name="CreateUser", language="go")
+if symbol:
+    chain = client.call_chain(from_symbol=symbol['symbolId'], direction="forward", depth=2)
+    if chain:
+        print(f"Call chain: {chain['name']}")
 ```
 
 > 💡 **提示**：
