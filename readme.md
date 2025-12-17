@@ -154,41 +154,49 @@ node dist/cli/index.js rebuild
 ## 🔌 官方 SDK
 
 - [多语言 SDK 目录](sdk/README.md)：汇总 JavaScript/TypeScript 与 Python SDK 的使用方式
-- JavaScript/TypeScript：`sdk/javascript`，直接通过 npm 包复用 `CodeIndex` API
-- Python：`sdk/python`，SDK 内置 Node Worker，`pip install` 后即可通过 `CodeIndexClient` 发起查询
+- **JavaScript/TypeScript**：`sdk/javascript`，直接通过 npm 包复用 `CodeIndex` API，可用于构建索引和查询
+- **Python**：`sdk/python`，直接读取 SQLite 数据库进行查询，无需 Node.js 运行时
   - 📖 [Python SDK 使用文档](sdk/python/README.md)
 
-### Python SDK 安装
+### 使用说明
+
+**重要**：CodeIndex 采用"构建与查询分离"的架构：
+- **构建索引库**：使用 TypeScript CLI（见上方"索引项目"步骤）
+- **查询数据库**：使用 Python SDK 或 JavaScript SDK
+
+### Python SDK 安装（用于查询数据库）
 
 ```bash
-pip install lydiacai-codeindex-sdk
+# 使用阿里云镜像源（推荐，速度更快）
+pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex-sdk
+
+# 或使用官方 PyPI 源
+pip install caicai-codeindex-sdk
 ```
 
-📦 **PyPI 地址**：[https://pypi.org/project/lydiacai-codeindex-sdk/0.1.0/](https://pypi.org/project/lydiacai-codeindex-sdk/0.1.0/)
+📦 **PyPI 地址**：[https://pypi.org/project/caicai-codeindex-sdk/](https://pypi.org/project/caicai-codeindex-sdk/)
 
 ### Python SDK 快速示例
 
 ```python
-from codeindex_sdk import CodeIndexClient, CodeIndexConfig
+from codeindex_sdk import CodeIndexClient
 
-config = CodeIndexConfig(
-    root_dir="/path/to/project",
-    db_path=".codeindex/project.db",
-    languages=["go", "ts", "py"],
-)
-
-with CodeIndexClient(config) as client:
+# 直接使用数据库路径（推荐）
+with CodeIndexClient(".codeindex/project.db") as client:
     # 查找符号
     symbols = client.find_symbols(name="CreateUser", language="go")
     
     # 查询对象属性
-    props = client.object_properties(object_name="UserService", language="go")
+    props = client.object_properties("UserService", language="go")
     
     # 生成调用链
     chain = client.call_chain(from_symbol=12345, direction="forward", depth=2)
 ```
 
-> 💡 **提示**：使用 Python SDK 前需要先通过 CLI 构建索引数据库（见上方"索引项目"步骤）
+> 💡 **提示**：
+> - **构建索引**：使用 TypeScript CLI（`node dist/cli/index.js index`）构建索引数据库
+> - **查询数据库**：使用 Python SDK 直接读取 SQLite 数据库，无需 Node.js 运行时
+> - Python SDK 仅用于查询，不支持构建索引
 
 ## 🗂️ 项目结构
 
