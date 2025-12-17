@@ -1,5 +1,7 @@
 """CodeIndex Python SDK - Direct SQLite database access"""
 
+__version__ = "0.2.0"
+
 from .client import CodeIndexClient
 from .config import CodeIndexConfig
 from .database import CodeIndexDatabase
@@ -19,6 +21,7 @@ from .exceptions import (
 )
 
 __all__ = [
+    "__version__",
     "CodeIndexClient",
     "CodeIndexConfig",
     "CodeIndexDatabase",

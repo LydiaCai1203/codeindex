@@ -1,0 +1,6 @@
+numpy>=1.24.0
+
+[dev]
+pytest
+mypy
+black

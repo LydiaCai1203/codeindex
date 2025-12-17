@@ -1,0 +1,8 @@
+MANIFEST.in
+README.md
+pyproject.toml
+caicai_codeindex.egg-info/PKG-INFO
+caicai_codeindex.egg-info/SOURCES.txt
+caicai_codeindex.egg-info/dependency_links.txt
+caicai_codeindex.egg-info/requires.txt
+caicai_codeindex.egg-info/top_level.txt

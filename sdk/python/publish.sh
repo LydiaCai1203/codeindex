@@ -30,5 +30,5 @@ twine upload dist/* \
 
 echo "🎉 发布完成！"
 echo "你可以通过以下命令安装："
-echo "  pip install lydiacai-codeindex-sdk"
+echo "  pip install caicai-codeindex"
 

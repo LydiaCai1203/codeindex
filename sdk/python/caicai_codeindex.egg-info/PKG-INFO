@@ -1,3 +1,21 @@
+Metadata-Version: 2.4
+Name: caicai-codeindex
+Version: 0.3.0
+Summary: CodeIndex Python SDK - Direct SQLite database access
+Author-email: CodeIndex <opensource@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/LydiaCai1203/codeindex
+Project-URL: Repository, https://github.com/LydiaCai1203/codeindex
+Project-URL: Issues, https://github.com/LydiaCai1203/codeindex/issues
+Keywords: codeindex,ast,code-index,tree-sitter,code-intelligence,semantic-search,sqlite
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24.0
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: black; extra == "dev"
+
 # CodeIndex Python SDK
 
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.9-blue.svg)](https://www.python.org/downloads/)

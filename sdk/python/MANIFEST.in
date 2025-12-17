@@ -3,8 +3,7 @@
 # 包含 README
 include README.md
 
-# 包含许可证（如果存在）
-include LICENSE
+# 注意：许可证信息在 pyproject.toml 中定义，无需单独的 LICENSE 文件
 
 # 注意：不再需要 worker_server.js（新版本直接访问 SQLite）
 

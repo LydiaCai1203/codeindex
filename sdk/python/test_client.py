@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from codeindex_sdk import CodeIndexClient, CodeIndexConfig, DatabaseNotFoundError
+from codeindex import CodeIndexClient, CodeIndexConfig, DatabaseNotFoundError
 
 
 # ============================================================================
