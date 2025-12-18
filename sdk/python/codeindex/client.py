@@ -438,6 +438,14 @@ class CodeIndexClient:
         kind = kwargs.get('kind', kind)
         min_similarity = kwargs.get('minSimilarity', kwargs.get('min_similarity', min_similarity))
         
+        # Ensure query_embedding is not None before calling underlying method
+        # This should have been generated above if query was provided
+        if query_embedding is None:
+            raise ValueError(
+                "query_embedding is required. "
+                "Either provide query_embedding directly, or provide query text to generate it automatically."
+            )
+        
         return self._query.semantic_search(
             query or '',
             query_embedding,

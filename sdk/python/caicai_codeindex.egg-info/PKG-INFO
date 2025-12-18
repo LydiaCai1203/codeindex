@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: caicai-codeindex
-Version: 0.3.3
+Version: 0.3.4
 Summary: CodeIndex Python SDK - Direct SQLite database access
 Author-email: CodeIndex <opensource@example.com>
 License: MIT
@@ -39,7 +39,7 @@ Requires-Dist: black; extra == "dev"
 
 ```bash
 # 使用阿里云镜像源（推荐，速度更快）
-pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex-sdk
+pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex
 
 # 或使用官方 PyPI 源
 pip install caicai-codeindex

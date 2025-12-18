@@ -174,7 +174,7 @@ pip install -i https://mirrors.aliyun.com/pypi/simple/ caicai-codeindex
 pip install caicai-codeindex
 ```
 
-📦 **PyPI 地址**：[https://pypi.org/project/caicai-codeindex-sdk/](https://pypi.org/project/caicai-codeindex-sdk/)
+📦 **PyPI 地址**：[https://pypi.org/project/caicai-codeindex/](https://pypi.org/project/caicai-codeindex/)
 
 ### Python SDK 快速示例
 
